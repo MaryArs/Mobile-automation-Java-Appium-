@@ -47,6 +47,14 @@ public class Task3 {
                 "Cannot find search input",
                 5);
         waitForElementPresent(
+                By.xpath("//android.widget.LinearLayout[@index='0']"),
+                "Cannot find  several articles",
+                5);
+        waitForElementPresent(
+                By.xpath("//android.widget.LinearLayout[@index='1']"),
+                "Cannot find  several articles",
+                5);
+        waitForElementPresent(
                 By.xpath("//android.widget.LinearLayout[@index='2']"),
                 "Cannot find  several articles",
                 5);
