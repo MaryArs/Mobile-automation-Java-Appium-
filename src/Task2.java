@@ -36,26 +36,34 @@ public class Task2 {
     }
 
     @Test
-    public  void testSearchText() {
+    public void testSearchText() {
         waitForElementAndClick(
                 By.xpath("//*[contains(@text,'Search Wikipedia')]"),
-                "Cannot find Searc Wikipedia input",
+                "Cannot find Search Wikipedia input",
                 5);
-        WebElement search_text = waitForElementPresent(
+        searchText(
                 By.id("org.wikipedia:id/search_src_text"),
                 "Cannot find text 'Search…'",
                 5);
-        String search_field_text = search_text.getAttribute("text");
+    }
+
+    private WebElement searchText(By by, String error_message, long timeoutInSeconds) {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
+        String elementText = element.getAttribute("text");
         Assert.assertEquals(
                 "We do not see text 'Search…'",
                 "Search…",
-                search_field_text);
+                elementText);
+        return element;
     }
+
+
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message + "\n");
         return wait.until(ExpectedConditions.presenceOfElementLocated(by));
     }
+
     private WebElement waitForElementAndClick(By by, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.click();
