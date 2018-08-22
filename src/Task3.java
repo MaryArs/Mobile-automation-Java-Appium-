@@ -37,6 +37,7 @@ public class Task3 {
 
     @Test
     public void testSearch() {
+
         waitForElementAndClick(
                 By.xpath("//*[contains(@text,'Search Wikipedia')]"),
                 "Cannot find Searc Wikipedia input",
@@ -46,18 +47,14 @@ public class Task3 {
                 "Java",
                 "Cannot find search input",
                 5);
-        waitForElementPresent(
-                By.xpath("//android.widget.LinearLayout[@index='0']"),
-                "Cannot find  several articles",
-                5);
-        waitForElementPresent(
-                By.xpath("//android.widget.LinearLayout[@index='1']"),
-                "Cannot find  several articles",
-                5);
-        waitForElementPresent(
-                By.xpath("//android.widget.LinearLayout[@index='2']"),
-                "Cannot find  several articles",
-                5);
+        int i;
+        for (i = 0; i <= 2; i++) {
+            waitForElementPresent(
+                    By.xpath("//android.widget.LinearLayout[@index= 'i']"),
+                    "Cannot find  several articles",
+                    5);
+        }
+
         waitForElementAndClick(
                 By.id("org.wikipedia:id/search_close_btn"),
                 "Cancel search",
