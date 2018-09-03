@@ -137,7 +137,7 @@ public class FirstTest {
     public void saveFirstArticleToMyList() {
         waitForElementAndClick(
                 By.xpath("//*[contains(@text,'Search Wikipedia')]"),
-                "Cannot find Searc Wikipedia input",
+                "Cannot find Search Wikipedia input",
                 5);
         waitForElementAndSendKeys(
                 By.xpath("//*[contains(@text,'Search…')]"),
@@ -228,10 +228,10 @@ public class FirstTest {
         return wait.until(ExpectedConditions.presenceOfElementLocated(by));
     }
 
-    private WebElement waitForElementPresent(By by, String error_message) {
-        return waitForElementPresent(by,
-                error_message, 5);
-    }
+//    private WebElement waitForElementPresent(By by, String error_message) {
+//        return waitForElementPresent(by,
+//                error_message, 5);
+//    }
 
     private WebElement waitForElementAndClick(By by, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
