@@ -115,22 +115,20 @@ public class FirstTest {
                 5);
         waitForElementAndSendKeys(
                 By.xpath("//*[contains(@text,'Search…')]"),
-                "Java",
+                "Appium",
                 "Cannot find search input",
                 5);
         waitForElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                "Cannot find Wikipedia input",
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Appium']"),
+                "Appium in search",
                 5);
        waitForElementPresent(
                By.id("org.wikipedia:id/view_page_title_text"),
                "Cannot find article title",
                15);
-       swipeUp(2000);
-       swipeUp(2000);
-       swipeUp(2000);
-       swipeUp(2000);
-       swipeUp(2000);
+       swipeUpToFindElement(By.xpath("//*[@text = 'View page in browser']"),
+               "Cannot find the end of the article.",
+               20);
 
 
     }
@@ -170,6 +168,7 @@ public class FirstTest {
         return  element;
     }
 
+    //Swipe up from the footer to the header.
     protected void swipeUp(int timeOfSwipe){
         TouchAction action = new TouchAction(driver);
         Dimension size = driver.manage().window().getSize();
@@ -178,6 +177,26 @@ public class FirstTest {
         int start_y =(int) (size.height*0.8);
         int end_y = (int) (size.height*0.2);
         action.press(x, start_y).waitAction(timeOfSwipe).moveTo(x, end_y).release().perform();
+
+    }
+
+    protected void swipeUpQuick(){
+        swipeUp(200);
+    }
+
+    //Swipe while element by is present on the page.
+    //max_swipes - max amount of swipes we need.
+    //already_swiped - the amount of real swipes
+    protected void swipeUpToFindElement(By by, String error_message, int max_swipes){
+        int already_swiped = 0;
+        while (driver.findElements(by).size()==0){
+            if(already_swiped > max_swipes){
+                waitForElementPresent(by, "Cannot find element by swiping up.\n" + error_message, 0);
+                return;
+            }
+            swipeUpQuick();
+            ++already_swiped;
+        }
 
     }
 }
