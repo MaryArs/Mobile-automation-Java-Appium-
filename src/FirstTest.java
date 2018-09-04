@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
     private AppiumDriver driver;
@@ -217,8 +218,28 @@ public class FirstTest {
                 By.xpath("//*[@text='Java (programming language)']"),
                 "Cannot delete saved article.",
                 5);
-
-
+    }
+    @Test
+    public void testAmountOfNotEmptySearch(){
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Cannot find Searc Wikipedia input",
+                5);
+        String search_line = "Linkin Park Discography";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                search_line,
+                "Cannot find search input",
+                5);
+        String search_result_locator = "//*[resource-id = ''org.wikipedia:id/search_results_list]" +
+                "/*[@resource-id = 'org.wikipedia:id/page_list_item_container']";
+        waitForElementPresent(
+                By.xpath(search_result_locator),
+                "Cannot find anything by request " + search_line,
+                30);
+        int amount_of_search_results = getAmountOfElements(By.xpath(search_result_locator));
+        Assert.assertTrue("We found a few results",
+                amount_of_search_results>0);
 
     }
 
@@ -310,8 +331,10 @@ public class FirstTest {
                .moveTo(left_x, middle_y)
                .release()
                .perform();
+    }
 
-
-
+    private int getAmountOfElements(By by){
+        List elements = driver.findElements(by);
+        return elements.size();
     }
 }
