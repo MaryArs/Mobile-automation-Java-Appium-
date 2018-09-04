@@ -367,9 +367,6 @@ public class FirstTest {
         if(amount_of_elements > 0){
             String default_message = "An element'" + by.toString() + "'supposed not to be present.";
             throw new AssertionError(default_message + " " + error_message);
-        } else{
-            System.out.println("Test PASS");
         }
-
     }
 }
