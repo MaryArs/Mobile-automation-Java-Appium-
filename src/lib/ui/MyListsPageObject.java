@@ -5,8 +5,8 @@ import org.openqa.selenium.By;
 
 public class MyListsPageObject extends MainPageObject {
 
-    public static final String folderByNameTPL = "//*[@text='{FolderName}']",
-                               articleTitleByTPL = "//*[@text='{ArticleTitleName}']";
+    public static final String folderByNameTPL = "xpath://*[@text='{FolderName}']",
+                               articleTitleByTPL = "xpath://*[@text='{ArticleTitleName}']";
 
 
     public MyListsPageObject(AppiumDriver driver){
@@ -24,7 +24,7 @@ public class MyListsPageObject extends MainPageObject {
         String folderNameXPath = getFolderXPathByName(nameOfFolder);
         //Click on the folder where i have saved my article in My list.
         this.waitForElementAndClick(
-                By.xpath(folderNameXPath),
+                folderNameXPath,
                 "Cannot find folder by name! " + nameOfFolder,
                 5);
     }
@@ -33,7 +33,7 @@ public class MyListsPageObject extends MainPageObject {
         String articleTitleXPAth = getArticleXPathByName(articleTitle);
 
         this.waitForElementPresent(
-                By.xpath(articleTitleXPAth),
+                articleTitleXPAth,
                 "Cannot find saved article by title " + articleTitle,
                 15);
     }
@@ -42,7 +42,7 @@ public class MyListsPageObject extends MainPageObject {
         String articleTitleXPAth = getArticleXPathByName(articleTitle);
         //Check that the article was deleted.
         this.waitForElementNotPresent(
-                By.xpath(articleTitleXPAth),
+                articleTitleXPAth,
                 "Saved article is still present. " + articleTitle,
                 15);
     }
@@ -52,7 +52,7 @@ public class MyListsPageObject extends MainPageObject {
         String articleTitleXPAth = getArticleXPathByName(articleTitle);
         //Swipe article from the right to the left and delete the article.
         this.swipeElementToLeft(
-                By.xpath(articleTitleXPAth),
+                articleTitleXPAth,
                 "Cannot find saved article");
         this.waitForarticleToDisappearByTitle(articleTitle);
 
@@ -62,7 +62,7 @@ public class MyListsPageObject extends MainPageObject {
         String articleTitleXPAth = getArticleXPathByName(articleTitle);
         this.waitForElementAndClick(
                // By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='" + article2 + "']"),
-                By.xpath(articleTitleXPAth),
+                articleTitleXPAth,
                 "Cannot find article with this title.",
                 15);
     }
