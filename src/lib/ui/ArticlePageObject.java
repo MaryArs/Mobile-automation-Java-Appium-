@@ -1,42 +1,57 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import lib.Platform;
 
-public class ArticlePageObject extends MainPageObject {
+abstract public class ArticlePageObject extends MainPageObject {
 
-    private static final String title = "id:org.wikipedia:id/view_page_title_text",
-                                footerElement = "xpath://*[@text = 'View page in browser']",
-                                optionsButton = "xpath://android.widget.ImageView[@content-desc='More options']",
-                                optionsAddToMyListButton = "xpath://*[@text='Add to reading list']",
-                                gotItButton = "id:org.wikipedia:id/onboarding_button",
-                                myListName ="id:org.wikipedia:id/text_input",
-                                myListOkButton = "xpath://*[@text='OK']",
-                                closeMyListButton = "xpath://android.widget.ImageButton[@content-desc='Navigate up']",
-                                folderByNameTPL = "xpath://*[@text='{FolderName}']";
+    protected static String
+            title,
+            footerElement,
+            optionsButton,
+            optionsAddToMyListButton,
+            gotItButton,
+            myListName,
+            myListOkButton,
+            closeMyListButton,
+            folderByNameTPL;
 
     public ArticlePageObject(AppiumDriver driver) {
 
         super(driver);
     }
 
-    public WebElement waitForTitleElement(){
+    public WebElement waitForTitleElement() {
 
-        return this.waitForElementPresent(title, "Cannot find article title on the page!",15);
+        return this.waitForElementPresent(title, "Cannot find article title on the page!", 15);
     }
 
-    private static String getFolderXPathByName(String nameOfFolder){
-        return folderByNameTPL.replace("{FolderName}",nameOfFolder);
+    private static String getFolderXPathByName(String nameOfFolder) {
+        return folderByNameTPL.replace("{FolderName}", nameOfFolder);
     }
 
-    public String getArticleTitle(){
+    public String getArticleTitle() {
         WebElement titleElement = waitForTitleElement();
-        return titleElement.getAttribute("text");
+        if (Platform.getInstance().isAndroid()) {
+            return titleElement.getAttribute("text");
+        } else {
+            return titleElement.getAttribute("name");
+        }
     }
 
-    public void swipeToFooter(){
-        this.swipeUpToFindElement(footerElement, "Cannot find the end of this article", 20);
+    public void swipeToFooter() {
+        if (Platform.getInstance().isAndroid()) {
+            this.swipeUpToFindElement(
+                    footerElement,
+                    "Cannot find the end of this article",
+                    20);
+        } else {
+            this.swipeUpTillElementAppear(
+                    footerElement,
+                    "Cannot find the end of this article",
+                    40);
+        }
     }
 
     public void addArticleToMyList(String nameOfFolder) {
@@ -79,7 +94,7 @@ public class ArticlePageObject extends MainPageObject {
                 5);
     }
 
-    public void addArticleToExistingFolder(String nameOfFolder){
+    public void addArticleToExistingFolder(String nameOfFolder) {
 
         this.waitForElementAndClick(
                 optionsButton,
@@ -102,12 +117,12 @@ public class ArticlePageObject extends MainPageObject {
     public void closeArticle() {
         //Click on the X button in the left corner.
         this.waitForElementAndClick(
-               closeMyListButton,
+                closeMyListButton,
                 "Cannot close article, cannot find X link.",
                 5);
     }
 
-    public void assertArticleTitlePresent(){
+    public void assertArticleTitlePresent() {
         this.assertElementNotPresent(title, "Cannot find article's title on the page!");
     }
 
