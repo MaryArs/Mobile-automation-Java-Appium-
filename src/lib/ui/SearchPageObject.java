@@ -4,17 +4,17 @@ import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class SearchPageObject extends MainPageObject {
+abstract public class SearchPageObject extends MainPageObject {
 
-    private static final String
-            searchInitElement = "xpath://*[contains(@text,'Search Wikipedia')]",
-            searchInput = "xpath://*[contains(@text,'Search…')]",
-            searchResultBySubstringTPL= "xpath://*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='{SUBSTRING}']",
-            searchCancelButton = "xpath:org.wikipedia:id/search_close_btn",
-            searchResultElement = "xpath://*[@resource-id = 'org.wikipedia:id/search_results_list']/*[@resource-id = 'org.wikipedia:id/page_list_item_container']",
-            emptyResultLabel = "xpath://*[@text = 'No results found']",
-            articleInContainer = "xpath://android.widget.LinearLayout[@index= 'i']",
-            searchField = "id:org.wikipedia:id/search_src_text";
+    protected static String
+            searchInitElement,
+            searchInput,
+            searchResultBySubstringTPL,
+            searchCancelButton,
+            searchResultElement,
+            emptyResultLabel ,
+            articleInContainer ,
+            searchField;
     public SearchPageObject(AppiumDriver driver){
         super(driver);
     }
@@ -80,8 +80,7 @@ public class SearchPageObject extends MainPageObject {
 
     public void waitForSomeFoundArticles(){
 
-        int i;
-        for (i = 0; i <= 2; i++) {
+        for (int i = 0; i <= 2; i++) {
             this.waitForElementPresent(
                     articleInContainer,
                     "Cannot find  several articles",

@@ -4,6 +4,7 @@ import lib.CoreTestCase;
 import lib.ui.ArticlePageObject;
 import lib.ui.MainPageObject;
 import lib.ui.SearchPageObject;
+import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +29,7 @@ public class AssertArticleTitle extends CoreTestCase {
     @Test
     public void testArticleTitle() throws InterruptedException {
 
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFactory.get(driver);
         searchPageObject.initSearchInput();
         searchPageObject.typeSearchLine("Java");
         searchPageObject.clickByArticleWithSubstring("Object-oriented programming language");

@@ -1,5 +1,6 @@
 import lib.CoreTestCase;
 import lib.ui.*;
+import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Test;
 
 
@@ -7,7 +8,7 @@ public class FirstTest extends CoreTestCase {
 
     @Test
     public void testSearch() {
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFactory.get(driver);
 
         searchPageObject.initSearchInput();
         searchPageObject.typeSearchLine("Java");
@@ -17,7 +18,7 @@ public class FirstTest extends CoreTestCase {
     @Test
     public void testCancelSearch() {
 
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFactory.get(driver);
 
         searchPageObject.initSearchInput();
         searchPageObject.waitForCancelButtonToAppear();
@@ -34,7 +35,7 @@ public class FirstTest extends CoreTestCase {
     @Test
     public void testAmountOfNotEmptySearch() {
 
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFactory.get(driver);
         searchPageObject.initSearchInput();
         String searchLine = "Linkin Park Discography";
         searchPageObject.typeSearchLine(searchLine);
@@ -46,7 +47,7 @@ public class FirstTest extends CoreTestCase {
     @Test
     public void testAmountOfEmptySearch() {
 
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFactory.get(driver);
         searchPageObject.initSearchInput();
         String searchLine = "qwergghfdrrt";
         searchPageObject.typeSearchLine(searchLine);
