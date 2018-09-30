@@ -14,6 +14,7 @@ public class AndroidArticlePageObject extends ArticlePageObject {
                 myListOkButton = "xpath://*[@text='OK']";
                 closeMyListButton = "xpath://android.widget.ImageButton[@content-desc='Navigate up']";
                 folderByNameTPL = "xpath://*[@text='{FolderName}']";
+                subtitleBySubstringTPL = "xpath://*[@text='{SUBSTRING}']";
     }
 
     public AndroidArticlePageObject(AppiumDriver driver){

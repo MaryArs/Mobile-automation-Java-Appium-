@@ -10,6 +10,7 @@ public class iOSArticlePageObject extends ArticlePageObject {
         optionsAddToMyListButton = "id: Save for later";
         closeMyListButton = "id: Back";
         folderByNameTPL = "xpath://*[@name='{FolderName}']";
+        subtitleBySubstringTPL= "id:{SUBSTRING}";
     }
 
     public iOSArticlePageObject(AppiumDriver driver){

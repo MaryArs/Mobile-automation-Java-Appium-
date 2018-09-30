@@ -15,7 +15,8 @@ abstract public class ArticlePageObject extends MainPageObject {
             myListName,
             myListOkButton,
             closeMyListButton,
-            folderByNameTPL;
+            folderByNameTPL,
+            subtitleBySubstringTPL;
 
     public ArticlePageObject(AppiumDriver driver) {
 
@@ -25,6 +26,12 @@ abstract public class ArticlePageObject extends MainPageObject {
     public WebElement waitForTitleElement() {
 
         return this.waitForElementPresent(title, "Cannot find article title on the page!", 15);
+    }
+
+    public WebElement waitForSubtittleElement(String substring)
+    {
+        String articleSubtitleXpath = getArticleSubtitleLocator(substring);
+        return this.waitForElementPresent(articleSubtitleXpath, "Cannot find article subtittle on the page!", 15);
     }
 
     private static String getFolderXPathByName(String nameOfFolder) {
@@ -37,6 +44,20 @@ abstract public class ArticlePageObject extends MainPageObject {
             return titleElement.getAttribute("text");
         } else {
             return titleElement.getAttribute("name");
+        }
+    }
+
+    public String getArticleSubtitleLocator(String substring) {
+        return subtitleBySubstringTPL.replace("{SUBSTRING}", substring);
+    }
+
+    public String getArticleSubtittle(String substring)
+    {
+        WebElement subtitle_element = waitForSubtittleElement(substring);
+        if (Platform.getInstance().isAndroid()) {
+            return subtitle_element.getAttribute("text");
+        } else {
+            return subtitle_element.getAttribute("name");
         }
     }
 
@@ -124,6 +145,15 @@ abstract public class ArticlePageObject extends MainPageObject {
 
     public void assertArticleTitlePresent() {
         this.assertElementNotPresent(title, "Cannot find article's title on the page!");
+    }
+
+//Save articles in My List for iOS
+    public void addArticlesToMySaved(){
+        this.waitForElementAndClick(
+                optionsAddToMyListButton = "id: Save for later",
+                "Cannot find option to add article to reading list",
+                5);
+
     }
 
 }
