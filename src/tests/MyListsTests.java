@@ -16,6 +16,7 @@ public class MyListsTests extends CoreTestCase {
     private static final String
             login = "vinkotov",
             password = "qazwsx";
+
     @Test
     public void testsaveFirstArticleToMyList() {
 
@@ -26,9 +27,9 @@ public class MyListsTests extends CoreTestCase {
         ArticlePageObject articlePageObject = ArticlePageObjectFactory.get(driver);
         articlePageObject.waitForTitleElement();
         String articleTitle = articlePageObject.getArticleTitle();
-        if(Platform.getInstance().isAndroid()) {
+        if (Platform.getInstance().isAndroid()) {
             articlePageObject.addArticleToMyList(nameOfFolder);
-        }else {
+        } else {
             articlePageObject.addArticlesToMySaved();
         }
         if (Platform.getInstance().isMW()) {
@@ -55,7 +56,7 @@ public class MyListsTests extends CoreTestCase {
         navigationUI.openNavigation();
         navigationUI.clickMyLists();
         MyListsPageObject myListsPageObject = MyListsPageObjectFactory.get(driver);
-        if(Platform.getInstance().isAndroid()){
+        if (Platform.getInstance().isAndroid()) {
             myListsPageObject.openFolderByName(nameOfFolder);
         }
         myListsPageObject.swipeArticleToDelete(articleTitle);
@@ -64,8 +65,11 @@ public class MyListsTests extends CoreTestCase {
     @Test
     public void testsaveTwoArticlesToMyList() {
 
-        String articleFirstSubstring = "Java (programming language)";
-        String articleSecondSubstring = "Python (programming language)";
+        //String articleFirstSubstring = "Java (programming language)";
+        //String articleSecondSubstring = "Python (programming language)";
+        //Will check by data-id
+        String dataIDFirstArticle = "15881";
+        String dataIDSecondArticle = "23862";
 
         //Add first article in the folder.
         SearchPageObject searchPageObject = SearchPageObjectFactory.get(driver);
@@ -73,49 +77,56 @@ public class MyListsTests extends CoreTestCase {
         searchPageObject.typeSearchLine("Java");
         searchPageObject.clickByArticleWithSubstring("Object-oriented programming language");
         ArticlePageObject articlePageObject = ArticlePageObjectFactory.get(driver);
-        articlePageObject.waitForSubtittleElement(articleFirstSubstring);
-        String articleFirstSubtittle = articlePageObject.getArticleSubtittle(articleFirstSubstring);
-        if(Platform.getInstance().isAndroid()) {
+        articlePageObject.waitForSubtittleElement(dataIDFirstArticle);
+        String articleFirstSubtittle = articlePageObject.getArticleSubtittle(dataIDFirstArticle);
+        if (Platform.getInstance().isAndroid()) {
             articlePageObject.addArticleToMyList(nameOfFolder);
-        }else {
+        } else {
             articlePageObject.addArticlesToMySaved();
         }
-        articlePageObject.closeArticle();
+        if (Platform.getInstance().isMW()) {
+            AuthorizationPageObject Auth = new AuthorizationPageObject(driver);
+            Auth.clickAuthButton();
+            Auth.enterLogInData(login, password);
+            Auth.submitForm();
+            articlePageObject.closeArticle();
 
-        //Add second article in the same folder
-        searchPageObject.initSearchInput();
-        searchPageObject.typeSearchLine("Python");
-        searchPageObject.clickByArticleWithSubstring("Python (programming language)");
-        articlePageObject.waitForSubtittleElement(articleSecondSubstring);
-        String articleSecondSubtitle = articlePageObject.getArticleSubtittle(articleSecondSubstring);
-        if(Platform.getInstance().isAndroid()) {
-            articlePageObject.addArticleToExistingFolder(nameOfFolder);
-        }else {
-            articlePageObject.addArticlesToMySaved();
+            //Add second article in the same folder
+            searchPageObject.initSearchInput();
+            searchPageObject.typeSearchLine("Python");
+            searchPageObject.clickByArticleWithSubstring("Python (programming language)");
+            articlePageObject.waitForSubtittleElement(dataIDSecondArticle);
+            String articleSecondSubtitle = articlePageObject.getArticleSubtittle(dataIDSecondArticle);
+            if (Platform.getInstance().isAndroid()) {
+                articlePageObject.addArticleToExistingFolder(nameOfFolder);
+            } else {
+                articlePageObject.addArticlesToMySaved();
+            }
+            articlePageObject.closeArticle();
+
+            //Click on the navigation button to My list and delete one article.
+            NavigationUI navigationUI = NavigationUIFactory.get(driver);
+            navigationUI.clickMyLists();
+            MyListsPageObject myListsPageObject = MyListsPageObjectFactory.get(driver);
+            if (Platform.getInstance().isAndroid()) {
+                myListsPageObject.openFolderByName(nameOfFolder);
+            }
+            myListsPageObject.swipeArticleToDelete(articleFirstSubtittle);
+
+            //Check that the article was deleted.
+            myListsPageObject.waitForArticleToDisappearBySubtittle(articleFirstSubtittle);
+            //Check that the second article is in the folder.
+            myListsPageObject.waitForArticleToAppearBySubtitle(articleSecondSubtitle);
+
+            //Check that the title is the same.
+            //myListsPageObject.openArticleByName(articleSecondSubtitle);
+            articlePageObject.waitForSubtittleElement(articleSecondSubtitle);
+
+            String articleActualDataId = articlePageObject.getArticleDataID(dataIDSecondArticle);
+            Assert.assertEquals(
+                    "We see unexpected data-id.",
+                    dataIDSecondArticle,
+                    articleActualDataId);
         }
-        articlePageObject.closeArticle();
-
-        //Click on the navigation button to My list and delete one article.
-        NavigationUI navigationUI = NavigationUIFactory.get(driver);
-        navigationUI.clickMyLists();
-        MyListsPageObject myListsPageObject = MyListsPageObjectFactory.get(driver);
-        if(Platform.getInstance().isAndroid()) {
-            myListsPageObject.openFolderByName(nameOfFolder);
-        }
-        myListsPageObject.swipeArticleToDelete(articleFirstSubtittle);
-
-        //Check that the article was deleted.
-        myListsPageObject.waitForArticleToDisappearBySubtittle(articleFirstSubtittle);
-        //Check that the second article is in the folder.
-        myListsPageObject.waitForArticleToAppearBySubtitle(articleSecondSubtitle);
-
-        //Check that the title is the same.
-        myListsPageObject.openArticleByName(articleSecondSubtitle);
-        articlePageObject.waitForSubtittleElement(articleSecondSubtitle);
-        String articleActualSubtitle = articlePageObject.getArticleSubtittle(articleSecondSubtitle);
-        Assert.assertEquals(
-                "We see unexpected subtitle.",
-                articleSecondSubtitle,
-                articleActualSubtitle);
     }
 }

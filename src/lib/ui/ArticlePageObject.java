@@ -36,6 +36,11 @@ abstract public class ArticlePageObject extends MainPageObject {
         return this.waitForElementPresent(articleSubtitleXpath, "Cannot find article subtittle on the page!", 15);
     }
 
+    public WebElement waitForDataId(String substring) {
+        String articleSubtitleXpath = getArticleSubtitleLocator(substring);
+        return this.waitForElementPresent(articleSubtitleXpath, "Cannot find article dataID on the page!", 15);
+    }
+
     private static String getFolderXPathByName(String nameOfFolder) {
         return folderByNameTPL.replace("{FolderName}", nameOfFolder);
     }
@@ -64,6 +69,16 @@ abstract public class ArticlePageObject extends MainPageObject {
         }
     }
 
+    public String getArticleDataID(String dataID) {
+        WebElement dataID_element = waitForSubtittleElement(dataID);
+        if (Platform.getInstance().isAndroid()) {
+            return dataID_element.getAttribute("text");
+        }else if(Platform.getInstance().isIOS()){
+            return dataID_element.getAttribute("name");
+        }else {
+            return dataID_element.getAttribute("data-id");
+        }
+    }
     public void swipeToFooter() {
         if (Platform.getInstance().isAndroid()) {
             this.swipeUpToFindElement(
@@ -180,7 +195,4 @@ abstract public class ArticlePageObject extends MainPageObject {
                     1);
         }
     }
-
-
-
 }
