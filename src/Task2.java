@@ -22,22 +22,11 @@ public class Task2 extends CoreTestCase {
                 By.xpath("//*[contains(@text,'Search Wikipedia')]"),
                 "Cannot find Search Wikipedia input",
                 5);
-        searchText(
-                By.id("org.wikipedia:id/search_src_text"),
-                "Cannot find text 'Search…'",
-                5);
+        WebElement element = waitForElementPresent(By.xpath("//*[contains(@text, 'Search…')]"),
+                "Search… is not found", 15);
+        String actualResult = element.getAttribute("text");
+        Assert.assertEquals("Search…", actualResult);
     }
-
-    private WebElement searchText(By by, String error_message, long timeoutInSeconds) {
-        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
-        String elementText = element.getAttribute("text");
-        Assert.assertEquals(
-                "We do not see text 'Search…'",
-                "Search…",
-                elementText);
-        return element;
-    }
-
 
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
