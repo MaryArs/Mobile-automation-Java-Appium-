@@ -2,10 +2,7 @@ package tests;
 
 import lib.CoreTestCase;
 import lib.Platform;
-import lib.ui.ArticlePageObject;
-import lib.ui.MyListsPageObject;
-import lib.ui.NavigationUI;
-import lib.ui.SearchPageObject;
+import lib.ui.*;
 import lib.ui.factories.ArticlePageObjectFactory;
 import lib.ui.factories.MyListsPageObjectFactory;
 import lib.ui.factories.NavigationUIFactory;
@@ -16,13 +13,16 @@ import org.junit.Test;
 public class MyListsTests extends CoreTestCase {
 
     private static final String nameOfFolder = "Learning programming";
+    private static final String
+            login = "vinkotov",
+            password = "qazwsx";
     @Test
     public void testsaveFirstArticleToMyList() {
 
         SearchPageObject searchPageObject = SearchPageObjectFactory.get(driver);
         searchPageObject.initSearchInput();
         searchPageObject.typeSearchLine("Java");
-        searchPageObject.clickByArticleWithSubstring("Object-oriented programming language");
+        searchPageObject.clickByArticleWithSubstring("bject-oriented programming language");
         ArticlePageObject articlePageObject = ArticlePageObjectFactory.get(driver);
         articlePageObject.waitForTitleElement();
         String articleTitle = articlePageObject.getArticleTitle();
@@ -31,9 +31,28 @@ public class MyListsTests extends CoreTestCase {
         }else {
             articlePageObject.addArticlesToMySaved();
         }
+        if (Platform.getInstance().isMW()) {
+            AuthorizationPageObject Auth = new AuthorizationPageObject(driver);
+            Auth.clickAuthButton();
+            Auth.enterLogInData(login, password);
+            Auth.submitForm();
+
+            // wait for redirect back to the title
+            articlePageObject.waitForTitleElement();
+
+            // check we back to the same page
+            assertEquals(
+                    "We back not to the same page after login.",
+                    articleTitle,
+                    articlePageObject.getArticleTitle()
+            );
+
+            articlePageObject.addArticlesToMySaved();
+        }
         articlePageObject.closeArticle();
 
         NavigationUI navigationUI = NavigationUIFactory.get(driver);
+        navigationUI.openNavigation();
         navigationUI.clickMyLists();
         MyListsPageObject myListsPageObject = MyListsPageObjectFactory.get(driver);
         if(Platform.getInstance().isAndroid()){

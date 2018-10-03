@@ -3,37 +3,38 @@ package lib.ui;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 import lib.Platform;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 abstract public class MyListsPageObject extends MainPageObject {
 
     protected static String
             folderByNameTPL,
             articleTitleByTPL,
-            articleSubTitleByTPL;
+            articleSubTitleByTPL,
+            RemoveFromSavedButton;
 
 
-    public MyListsPageObject(AppiumDriver driver){
+    public MyListsPageObject(RemoteWebDriver driver) {
         super(driver);
     }
-    private static String getFolderXPathByName(String nameOfFolder){
-        return folderByNameTPL.replace("{FolderName}",nameOfFolder);
+
+    private static String getFolderXPathByName(String nameOfFolder) {
+        return folderByNameTPL.replace("{FolderName}", nameOfFolder);
     }
 
-    private static String getSavedArticleXpathBySubtittle(String article_subtittle)
-    {
+    private static String getSavedArticleXpathBySubtittle(String article_subtittle) {
         if (Platform.getInstance().isAndroid()) {
             return articleSubTitleByTPL.replace("{SUBTITTLE}", article_subtittle.toLowerCase());
         } else {
             return articleSubTitleByTPL.replace("{SUBTITTLE}", article_subtittle);
         }
-
     }
 
-    private static String getArticleXPathByName(String articleTitle){
-        return articleTitleByTPL.replace("{ArticleTitleName}",articleTitle);
+    private static String getArticleXPathByName(String articleTitle) {
+        return articleTitleByTPL.replace("{ArticleTitleName}", articleTitle);
     }
 
-    public void openFolderByName(String nameOfFolder){
+    public void openFolderByName(String nameOfFolder) {
         String folderNameXPath = getFolderXPathByName(nameOfFolder);
         //Click on the folder where i have saved my article in My list.
         this.waitForElementAndClick(
@@ -42,7 +43,7 @@ abstract public class MyListsPageObject extends MainPageObject {
                 5);
     }
 
-    public void waitForarticleToAppearByTitle(String articleTitle){
+    public void waitForarticleToAppearByTitle(String articleTitle) {
         String articleTitleXPAth = getArticleXPathByName(articleTitle);
 
         this.waitForElementPresent(
@@ -51,8 +52,7 @@ abstract public class MyListsPageObject extends MainPageObject {
                 15);
     }
 
-    public void waitForArticleToAppearBySubtitle(String article_subtittle)
-    {
+    public void waitForArticleToAppearBySubtitle(String article_subtittle) {
         String article_xpath = getSavedArticleXpathBySubtittle(article_subtittle);
         this.waitForElementPresent(
                 article_xpath,
@@ -61,7 +61,7 @@ abstract public class MyListsPageObject extends MainPageObject {
         );
     }
 
-    public void waitForarticleToDisappearByTitle(String articleTitle){
+    public void waitForarticleToDisappearByTitle(String articleTitle) {
         String articleTitleXPAth = getArticleXPathByName(articleTitle);
         //Check that the article was deleted.
         this.waitForElementNotPresent(
@@ -70,8 +70,7 @@ abstract public class MyListsPageObject extends MainPageObject {
                 15);
     }
 
-    public void waitForArticleToDisappearBySubtittle(String articleSubtittle)
-    {
+    public void waitForArticleToDisappearBySubtittle(String articleSubtittle) {
         String articleXpath = getSavedArticleXpathBySubtittle(articleSubtittle);
         this.waitForElementNotPresent(
                 articleXpath,
@@ -80,23 +79,37 @@ abstract public class MyListsPageObject extends MainPageObject {
         );
     }
 
-    public void swipeArticleToDelete(String articleTitle){
+    public void swipeArticleToDelete(String articleTitle) {
         //Search the article and swipe to delete
         this.waitForarticleToAppearByTitle(articleTitle);
         String articleTitleXPAth = getArticleXPathByName(articleTitle);
         //Swipe article from the right to the left and delete the article.
-        this.swipeElementToLeft(
-                articleTitleXPAth,
-                "Cannot find saved article");
-        if(Platform.getInstance().isIOS()){
+        if (Platform.getInstance().isIOS() || Platform.getInstance().isAndroid()) {
+            this.swipeElementToLeft(
+                    articleTitleXPAth,
+                    "Cannot find saved article"
+            );
+        } else {
+            String remove_locator = getRemoveButtonByTitle(articleTitle);
+            this.waitForElementAndClick(
+                    remove_locator,
+                    "Cannot click button to remove article from saved.",
+                    10
+            );
+        }
+
+        if (Platform.getInstance().isIOS()) {
             this.clickElementToTheRightUpperCorner(articleTitleXPAth, "Cannot find saved article");
         }
-        this.waitForarticleToDisappearByTitle(articleTitle);
 
+        if (Platform.getInstance().isMW()) {
+            driver.navigate().refresh();
+        }
+
+        this.waitForarticleToDisappearByTitle(articleTitle);
     }
 
-    public void swipeByArticleToDeleteWithSubtittle(String article_subtittle)
-    {
+    public void swipeByArticleToDeleteWithSubtittle(String article_subtittle) {
         this.waitForArticleToAppearBySubtitle(article_subtittle);
         String article_xpath = getSavedArticleXpathBySubtittle(article_subtittle);
         this.swipeElementToLeft(
@@ -108,16 +121,18 @@ abstract public class MyListsPageObject extends MainPageObject {
         this.waitForarticleToDisappearByTitle(article_subtittle);
     }
 
-    public void openArticleByName(String articleTitle){
+    public void openArticleByName(String articleTitle) {
         String articleTitleXPAth = getArticleXPathByName(articleTitle);
         this.waitForElementAndClick(
-               // By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='" + article2 + "']"),
+                // By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='" + article2 + "']"),
                 articleTitleXPAth,
                 "Cannot find article with this title.",
                 15);
     }
 
-
+    private static String getRemoveButtonByTitle(String article_title) {
+        return RemoveFromSavedButton.replace("{TITLE}", article_title);
+    }
 
 
 }

@@ -3,6 +3,7 @@ package lib.ui;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.WebElement;
 import lib.Platform;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 abstract public class ArticlePageObject extends MainPageObject {
 
@@ -16,9 +17,11 @@ abstract public class ArticlePageObject extends MainPageObject {
             myListOkButton,
             closeMyListButton,
             folderByNameTPL,
-            subtitleBySubstringTPL;
+            subtitleBySubstringTPL,
+            OptionRemoveFromMyListButton,
+            OptionsAddToMyListButton;
 
-    public ArticlePageObject(AppiumDriver driver) {
+    public ArticlePageObject(RemoteWebDriver driver) {
 
         super(driver);
     }
@@ -28,8 +31,7 @@ abstract public class ArticlePageObject extends MainPageObject {
         return this.waitForElementPresent(title, "Cannot find article title on the page!", 15);
     }
 
-    public WebElement waitForSubtittleElement(String substring)
-    {
+    public WebElement waitForSubtittleElement(String substring) {
         String articleSubtitleXpath = getArticleSubtitleLocator(substring);
         return this.waitForElementPresent(articleSubtitleXpath, "Cannot find article subtittle on the page!", 15);
     }
@@ -42,8 +44,10 @@ abstract public class ArticlePageObject extends MainPageObject {
         WebElement titleElement = waitForTitleElement();
         if (Platform.getInstance().isAndroid()) {
             return titleElement.getAttribute("text");
-        } else {
+        } else if (Platform.getInstance().isIOS()) {
             return titleElement.getAttribute("name");
+        } else {
+            return titleElement.getText();
         }
     }
 
@@ -51,8 +55,7 @@ abstract public class ArticlePageObject extends MainPageObject {
         return subtitleBySubstringTPL.replace("{SUBSTRING}", substring);
     }
 
-    public String getArticleSubtittle(String substring)
-    {
+    public String getArticleSubtittle(String substring) {
         WebElement subtitle_element = waitForSubtittleElement(substring);
         if (Platform.getInstance().isAndroid()) {
             return subtitle_element.getAttribute("text");
@@ -67,10 +70,15 @@ abstract public class ArticlePageObject extends MainPageObject {
                     footerElement,
                     "Cannot find the end of this article",
                     20);
-        } else {
+        } else if (Platform.getInstance().isIOS()) {
             this.swipeUpTillElementAppear(
                     footerElement,
                     "Cannot find the end of this article",
+                    40);
+        } else {
+            this.scrollWebPageTillElementNotVisible(
+                    footerElement,
+                    "Cannot find the end of article",
                     40);
         }
     }
@@ -137,23 +145,42 @@ abstract public class ArticlePageObject extends MainPageObject {
 
     public void closeArticle() {
         //Click on the X button in the left corner.
-        this.waitForElementAndClick(
-                closeMyListButton,
-                "Cannot close article, cannot find X link.",
-                5);
+        if (Platform.getInstance().isIOS() || Platform.getInstance().isAndroid()) {
+            this.waitForElementAndClick(
+                    closeMyListButton,
+                    "Cannot close article, cannot find X link",
+                    5
+            );
+        } else {
+            System.out.println("Method closeArticle() do nothing for platform " + Platform.getInstance().getPlatformVar());
+        }
     }
 
     public void assertArticleTitlePresent() {
         this.assertElementNotPresent(title, "Cannot find article's title on the page!");
     }
 
-//Save articles in My List for iOS
-    public void addArticlesToMySaved(){
+    //Save articles in My List for iOS
+    public void addArticlesToMySaved() {
+        if (Platform.getInstance().isMW()) {
+            this.removeArticleFromSavedIfItAdded();
+        }
         this.waitForElementAndClick(
                 optionsAddToMyListButton = "id: Save for later",
                 "Cannot find option to add article to reading list",
                 5);
-
     }
+
+    public void removeArticleFromSavedIfItAdded()
+    {
+        if (this.isElementPresent(OptionRemoveFromMyListButton)) {
+            this.waitForElementAndClick(
+                    OptionRemoveFromMyListButton,
+                    "Cannot click button to remove an article from saved",
+                    1);
+        }
+    }
+
+
 
 }
